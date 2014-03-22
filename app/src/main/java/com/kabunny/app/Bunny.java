@@ -1,14 +1,16 @@
 package com.kabunny.app;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.util.Random;
 
-public class Frog {
-    private String TAG = "Frog";
-    private Paint paint;
+public class Bunny {
+    private String TAG = "Bunny";
     private int radius;
 
     // Coordinates
@@ -22,6 +24,7 @@ public class Frog {
     private int WIDTH = 720;
     private int HEIGHT = 720;
 
+    private Drawable image;
 
     // TODO: move this function!
     // from http://stackoverflow.com/a/363692/2386438
@@ -48,20 +51,19 @@ public class Frog {
     }
 
 
-    public Frog() {
+    public Bunny(Context context) {
         Log.i(TAG, "ctor");
 
         radius = randInt(20, 40);
         x = randInt(radius, WIDTH - radius);
         y = randInt(radius, HEIGHT - radius);
 
-        paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setARGB(220, randInt(0, 40), randInt(150, 255), randInt(0, 80));
+        image = context.getResources().getDrawable(R.drawable.bunny);
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawCircle(x, y, radius, paint);
+        image.draw(canvas);
+        image.setBounds(x, y, x+radius*2, y+radius*2);
     }
 
     public void update() {

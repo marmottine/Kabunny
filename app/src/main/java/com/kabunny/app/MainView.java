@@ -9,8 +9,8 @@ import java.util.List;
 
 public class MainView extends SurfaceView {
     private String TAG = "MainView";
-    private List<Frog> frogs;
-    private int num_frogs = 4;
+    private List<Bunny> bunnies;
+    private int num_bunnies = 4;
 
     private PerfStats perf_stats;
 
@@ -20,9 +20,9 @@ public class MainView extends SurfaceView {
         super(context);
         setWillNotDraw(false);
 
-        frogs = new ArrayList<Frog>(num_frogs);
-        for (int i = 0; i < num_frogs; i++) {
-            frogs.add(new Frog());
+        bunnies = new ArrayList<Bunny>(num_bunnies);
+        for (int i = 0; i < num_bunnies; i++) {
+            bunnies.add(new Bunny(context));
         }
 
         perf_stats = new PerfStats();
@@ -40,14 +40,14 @@ public class MainView extends SurfaceView {
     }
 
     private void draw_(Canvas canvas) {
-        for (Frog frog: frogs) {
-            frog.draw(canvas);
+        for (Bunny bunny : bunnies) {
+            bunny.draw(canvas);
         }
     }
 
     private void update() {
-        for (Frog frog: frogs) {
-            frog.update();
+        for (Bunny bunny : bunnies) {
+            bunny.update();
         }
     }
 }
