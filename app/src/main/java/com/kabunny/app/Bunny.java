@@ -1,14 +1,16 @@
 package com.kabunny.app;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.util.Random;
 
-public class Frog {
-    private String TAG = "Frog";
-    private Paint paint;
+public class Bunny {
+    private String TAG = "Bunny";
     private int radius;
 
     // Coordinates
@@ -25,6 +27,8 @@ public class Frog {
     // We may want to force either orientation.
     private int WIDTH = 720;
     private int HEIGHT = 720;
+
+    private Drawable image;
 
     // TODO: move this function!
     // from http://stackoverflow.com/a/363692/2386438
@@ -56,7 +60,7 @@ public class Frog {
         return rand.nextDouble() * (max - min) + min;
     }
 
-    public Frog() {
+    public Bunny(Context context) {
         Log.d(TAG, "ctor");
 
         radius = randInt(20, 40);
@@ -65,13 +69,15 @@ public class Frog {
         vx = randDouble(-0.2, 0.2);
         vy = randDouble(-0.2, 0.2);
 
-        paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setARGB(220, randInt(0, 40), randInt(150, 255), randInt(0, 80));
+        image = context.getResources().getDrawable(R.drawable.bunny);
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawCircle((int) Math.round(x), (int) Math.round(y), radius, paint);
+        image.setBounds((int) Math.round(x),
+                (int) Math.round(y),
+                (int) Math.round(x+radius*2),
+                (int) Math.round(y+radius*2));
+        image.draw(canvas);
     }
 
     public void update(long delta) {
