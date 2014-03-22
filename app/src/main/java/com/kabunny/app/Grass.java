@@ -2,17 +2,12 @@ package com.kabunny.app;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.widget.ImageView;
 
 import java.util.Random;
 
-public class Bunny {
-    private String TAG = "Bunny";
-    private int radius;
-
+public class Grass {
     // Coordinates
     private int x;
     private int y;
@@ -51,33 +46,15 @@ public class Bunny {
     }
 
 
-    public Bunny(Context context) {
-        Log.i(TAG, "ctor");
+    public Grass(Context context) {
+        x = randInt(0, WIDTH);
+        y = randInt(0, HEIGHT);
 
-        radius = randInt(20, 40);
-        x = randInt(radius, WIDTH - radius);
-        y = randInt(radius, HEIGHT - radius);
-
-        image = context.getResources().getDrawable(R.drawable.bunny);
+        image = context.getResources().getDrawable(R.drawable.grass);
     }
 
     public void draw(Canvas canvas) {
-        image.setBounds(x, y, x+radius*2, y+radius*2);
+        image.setBounds(x, y, x+100, y+100);
         image.draw(canvas);
-    }
-
-    public void update() {
-        Random rand = new Random();
-        int direction;
-        if (rand.nextBoolean()) {
-            direction = 1;
-        } else {
-            direction = -1;
-        }
-        if (rand.nextBoolean()) {
-            x += direction * 10;
-        } else {
-            y += direction * 10;
-        }
     }
 }

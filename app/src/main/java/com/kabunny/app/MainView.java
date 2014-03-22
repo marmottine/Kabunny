@@ -2,6 +2,7 @@ package com.kabunny.app;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ public class MainView extends SurfaceView {
     private String TAG = "MainView";
     private List<Bunny> bunnies;
     private int num_bunnies = 4;
+    private List<Grass> grasses;
+    private int num_grasses = 25;
 
     private PerfStats perf_stats;
 
@@ -19,6 +22,12 @@ public class MainView extends SurfaceView {
     public MainView(Context context) {
         super(context);
         setWillNotDraw(false);
+        setBackgroundColor(Color.rgb(0x8B, 0xD8, 0x37));
+
+        grasses = new ArrayList<Grass>(num_grasses);
+        for (int i = 0; i < num_grasses; i++) {
+            grasses.add(new Grass(context));
+        }
 
         bunnies = new ArrayList<Bunny>(num_bunnies);
         for (int i = 0; i < num_bunnies; i++) {
@@ -40,6 +49,10 @@ public class MainView extends SurfaceView {
     }
 
     private void draw_(Canvas canvas) {
+        for (Grass grass : grasses) {
+            grass.draw(canvas);
+        }
+
         for (Bunny bunny : bunnies) {
             bunny.draw(canvas);
         }
