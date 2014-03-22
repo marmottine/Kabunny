@@ -2,6 +2,8 @@ package com.kabunny.app;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.Log;
+import android.os.SystemClock;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ public class MainView extends SurfaceView {
 
     private PerfStats perf_stats;
 
-    private long last_update_time;
+    private long last_update_time = 0;
 
     public MainView(Context context) {
         super(context);
@@ -46,8 +48,16 @@ public class MainView extends SurfaceView {
     }
 
     private void update() {
-        for (Frog frog: frogs) {
-            frog.update();
+        if (last_update_time == 0) {
+            last_update_time = SystemClock.elapsedRealtime();
+        } else {
+            long now = SystemClock.elapsedRealtime();
+            long delta = now - last_update_time;
+            last_update_time = now;
+
+            for (Frog frog : frogs) {
+                frog.update(delta);
+            }
         }
     }
 }

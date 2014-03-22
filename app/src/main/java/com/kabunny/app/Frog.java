@@ -12,8 +12,12 @@ public class Frog {
     private int radius;
 
     // Coordinates
-    private int x;
-    private int y;
+    private double x;
+    private double y;
+
+    // Speed
+    private double vx;
+    private double vy;
 
     // TODO: get canvas dimensions
     // note that actual dim (WxH) on my tablet is 1280x736 or 800x1205,
@@ -21,7 +25,6 @@ public class Frog {
     // We may want to force either orientation.
     private int WIDTH = 720;
     private int HEIGHT = 720;
-
 
     // TODO: move this function!
     // from http://stackoverflow.com/a/363692/2386438
@@ -47,13 +50,20 @@ public class Frog {
         return randomNum;
     }
 
+    // TODO: move this function!
+    public static double randDouble(double min, double max) {
+        Random rand = new Random();
+        return rand.nextDouble() * (max - min) + min;
+    }
 
     public Frog() {
-        Log.i(TAG, "ctor");
+        Log.d(TAG, "ctor");
 
         radius = randInt(20, 40);
         x = randInt(radius, WIDTH - radius);
         y = randInt(radius, HEIGHT - radius);
+        vx = randDouble(-0.2, 0.2);
+        vy = randDouble(-0.2, 0.2);
 
         paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
@@ -61,21 +71,11 @@ public class Frog {
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawCircle(x, y, radius, paint);
+        canvas.drawCircle((int) Math.round(x), (int) Math.round(y), radius, paint);
     }
 
-    public void update() {
-        Random rand = new Random();
-        int direction;
-        if (rand.nextBoolean()) {
-            direction = 1;
-        } else {
-            direction = -1;
-        }
-        if (rand.nextBoolean()) {
-            x += direction * 10;
-        } else {
-            y += direction * 10;
-        }
+    public void update(long delta) {
+        x += vx * delta;
+        y += vy * delta;
     }
 }
