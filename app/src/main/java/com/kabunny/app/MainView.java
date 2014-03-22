@@ -14,6 +14,8 @@ public class MainView extends SurfaceView {
 
     private PerfStats perf_stats;
 
+    private long last_update_time;
+
     public MainView(Context context) {
         super(context);
         setWillNotDraw(false);
@@ -30,11 +32,22 @@ public class MainView extends SurfaceView {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        for (Frog frog: frogs) {
-            frog.draw(canvas);
-        }
+        update();
+        draw_(canvas);
 
         perf_stats.onDraw(canvas);
         invalidate();
+    }
+
+    private void draw_(Canvas canvas) {
+        for (Frog frog: frogs) {
+            frog.draw(canvas);
+        }
+    }
+
+    private void update() {
+        for (Frog frog: frogs) {
+            frog.update();
+        }
     }
 }

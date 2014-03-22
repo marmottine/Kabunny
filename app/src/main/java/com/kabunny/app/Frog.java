@@ -19,8 +19,8 @@ public class Frog {
     // note that actual dim (WxH) on my tablet is 1280x736 or 800x1205,
     // depending on the orientation.
     // We may want to force either orientation.
-    private int WIDTH = 800;
-    private int HEIGHT = 736;
+    private int WIDTH = 720;
+    private int HEIGHT = 720;
 
 
     // TODO: move this function!
@@ -62,5 +62,20 @@ public class Frog {
 
     public void draw(Canvas canvas) {
         canvas.drawCircle(x, y, radius, paint);
+    }
+
+    public void update() {
+        Random rand = new Random();
+        int direction;
+        if (rand.nextBoolean()) {
+            direction = 1;
+        } else {
+            direction = -1;
+        }
+        if (rand.nextBoolean()) {
+            x += direction * 10;
+        } else {
+            y += direction * 10;
+        }
     }
 }
