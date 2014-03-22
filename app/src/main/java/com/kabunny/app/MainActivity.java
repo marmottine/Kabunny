@@ -3,11 +3,8 @@ package com.kabunny.app;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-
 
 public class MainActivity extends Activity {
     private String TAG = "MainActivity";
