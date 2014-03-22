@@ -7,7 +7,7 @@
 # android studio
 .gradle
 .idea/workspace.xml
-/*/local.properties
+local.properties
 /*/out
 /*/*/build
 /*/*/production
