@@ -2,24 +2,22 @@ package com.kabunny.app;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.widget.ImageView;
 
 import java.util.Random;
 
 public class Bunny {
     private String TAG = "Bunny";
-    private int radius;
+    public int radius;
 
     // Coordinates
-    private double x;
-    private double y;
+    public double x;
+    public double y;
 
     // Speed
-    private double vx;
-    private double vy;
+    public double vx;
+    public double vy;
 
     // TODO: get canvas dimensions
     // note that actual dim (WxH) on my tablet is 1280x736 or 800x1205,
@@ -73,10 +71,10 @@ public class Bunny {
     }
 
     public void draw(Canvas canvas) {
-        image.setBounds((int) Math.round(x),
-                (int) Math.round(y),
-                (int) Math.round(x+radius*2),
-                (int) Math.round(y+radius*2));
+        image.setBounds((int) Math.round(x-radius),
+                (int) Math.round(y-radius),
+                (int) Math.round(x+radius),
+                (int) Math.round(y+radius));
         image.draw(canvas);
     }
 

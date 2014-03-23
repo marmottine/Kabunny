@@ -43,7 +43,7 @@ public class MainView extends SurfaceView {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        update();
+        update(canvas);
         draw_(canvas);
 
         perf_stats.onDraw(canvas);
@@ -60,7 +60,7 @@ public class MainView extends SurfaceView {
         }
     }
 
-    private void update() {
+    private void update(Canvas canvas) {
         if (last_update_time == 0) {
             last_update_time = SystemClock.elapsedRealtime();
         } else {
@@ -68,8 +68,27 @@ public class MainView extends SurfaceView {
             long delta = now - last_update_time;
             last_update_time = now;
 
+            // update bunnies individually
             for (Bunny bunny : bunnies) {
                 bunny.update(delta);
+            }
+
+            // get "wall" coordinates
+            int top_wall = 0;
+            int bottom_wall = canvas.getHeight();
+            int left_wall = 0;
+            int right_wall = canvas.getWidth();
+
+            // check collisions
+            for (Bunny bunny : bunnies) {
+                if ((bunny.x + bunny.radius >= right_wall && bunny.vx > 0)
+                        || (bunny.x - bunny.radius <= left_wall && bunny.vx < 0)) {
+                    bunny.vx = -bunny.vx;
+                }
+                if ((bunny.y - bunny.radius <= top_wall && bunny.vy < 0)
+                        || (bunny.y + bunny.radius >= bottom_wall && bunny.vy > 0)) {
+                    bunny.vy = -bunny.vy;
+                }
             }
         }
     }
