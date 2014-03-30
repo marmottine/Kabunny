@@ -7,5 +7,7 @@
 # android studio
 .gradle
 .idea/workspace.xml
+.idea/inspectionProfiles
+.idea/dictionaries
 local.properties
 /*/build
