@@ -105,4 +105,12 @@ public class Vector2 {
     public boolean equals(Vector2 v) {
         return equals(v.x, v.y);
     }
+
+    /**
+     * Return the norm
+     */
+    public float len() {
+        return (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
+
 }

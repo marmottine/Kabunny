@@ -25,7 +25,7 @@ public class Bunny {
     private float HEIGHT = 720f;
 
     private Bitmap bm;
-    private double offset = 0;
+    private float offset = 0f;
     private int bm_width;
     private int bm_height;
 
@@ -65,12 +65,20 @@ public class Bunny {
 
         this.radius = radius != null ? radius : randFloat(20, 100);
 
-        x = x != null ? x : randFloat(this.radius, WIDTH - this.radius);
-        y = y != null ? y : randFloat(this.radius, HEIGHT - this.radius);
+        if (x == null) {
+            x = randFloat(this.radius, WIDTH - this.radius);
+        }
+        if (y == null) {
+            y = randFloat(this.radius, HEIGHT - this.radius);
+        }
         position = new Vector2(x, y);
 
-        vx = vx != null ? vx : randFloat(-0.2f, 0.2f);
-        vy = vy != null ? vy : randFloat(-0.2f, 0.2f);
+        if (vx == null) {
+            vx = randFloat(-0.2f, 0.2f);
+        }
+        if (vy == null) {
+            vy = randFloat(-0.2f, 0.2f);
+        }
         velocity = new Vector2(vx, vy);
 
         bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.flat_bunny);
@@ -84,10 +92,8 @@ public class Bunny {
     }
 
     public void update(long delta) {
-        position.add(velocity.clone().scl(delta));
-
-        double delta_x = velocity.x * delta;
-        double delta_y = velocity.y * delta;
+        Vector2 delta_pos = velocity.clone().scl(delta);
+        position.add(delta_pos);
 
         int min_offset = 0;
         int max_offset = bm_height - bm_width;
@@ -100,8 +106,7 @@ public class Bunny {
         // Thus, for every pixel on the ground, we should offset the bitmap by
         // max_offset / (2*PI*radius)
 
-        double delta_dist = Math.sqrt(Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
-        double delta_offset = delta_dist * max_offset / (2.0 * Math.PI * radius);
+        double delta_offset = delta_pos.len() * max_offset / (2.0 * Math.PI * radius);
 
         if (velocity.y > 0) {
             offset -= delta_offset;
