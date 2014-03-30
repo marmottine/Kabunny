@@ -92,6 +92,35 @@ public class Vector2 {
     }
 
     /**
+     * Divide (modifies this vector)
+     */
+    public Vector2 div(float x, float y) {
+        this.x /= x;
+        this.y /= y;
+        return this;
+    }
+
+    public Vector2 div(float c) {
+        return div(c, c);
+    }
+
+    public Vector2 div(Vector2 v) {
+        return div(v.x, v.y);
+    }
+
+    /**
+     * Dot product
+     */
+
+    public float dot(float x, float y) {
+        return (this.x * x + this.y * y);
+    }
+
+    public float dot(Vector2 v) {
+        return dot(v.x, v.y);
+    }
+
+    /**
      * Comparison for equality
      */
     public boolean equals(float x, float y) {
@@ -110,7 +139,10 @@ public class Vector2 {
      * Return the norm
      */
     public float len() {
-        return (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        return (float) Math.sqrt(len2());
     }
 
+    public float len2() {
+        return x*x + y*y;
+    }
 }

@@ -13,6 +13,7 @@ import java.util.Random;
 public class Bunny {
     private String TAG = "Bunny";
     public float radius;
+    public float mass;
 
     public Vector2 position;
     public Vector2 velocity; // pixels per ms
@@ -28,9 +29,9 @@ public class Bunny {
     private float offset = 0f;
     private int bm_width;
     private int bm_height;
+    static Random rand = new Random();
 
     public static float randFloat(float min, float max) {
-        Random rand = new Random();
         return rand.nextFloat() * (max - min) + min;
     }
 
@@ -63,7 +64,8 @@ public class Bunny {
                  Integer radius, Float x, Float y, Float vx, Float vy) {
         Log.d(TAG, "ctor");
 
-        this.radius = radius != null ? radius : randFloat(20, 100);
+        this.radius = radius != null ? radius : randFloat(20f, 100f);
+        mass = this.radius * this.radius * this.radius;
 
         if (x == null) {
             x = randFloat(this.radius, WIDTH - this.radius);
