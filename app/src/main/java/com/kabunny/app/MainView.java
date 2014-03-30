@@ -33,7 +33,7 @@ public class MainView extends SurfaceView {
 
         bunnies = new ArrayList<Bunny>(num_bunnies);
         for (int i = 0; i < num_bunnies; i++) {
-            bunnies.add(new Bunny(context));
+            bunnies.add(new Bunny(context, null, null, null, 0.0, null));
         }
 
         perf_stats = new PerfStats();
