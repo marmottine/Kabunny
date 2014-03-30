@@ -1,8 +1,11 @@
 package com.kabunny.app;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
+import android.graphics.Path;
+import android.graphics.Rect;
 import android.util.Log;
 
 import java.util.Random;
@@ -15,7 +18,7 @@ public class Bunny {
     public double x;
     public double y;
 
-    // Speed
+    // Speed (in pixels per ms)
     public double vx;
     public double vy;
 
@@ -26,7 +29,10 @@ public class Bunny {
     private int WIDTH = 720;
     private int HEIGHT = 720;
 
-    private Drawable image;
+    private Bitmap bm;
+    private int offset = 0;
+    private int bm_width;
+    private int bm_height;
 
     // TODO: move this function!
     // from http://stackoverflow.com/a/363692/2386438
@@ -47,9 +53,7 @@ public class Bunny {
 
         // nextInt is normally exclusive of the top value,
         // so add 1 to make it inclusive
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-
-        return randomNum;
+        return rand.nextInt((max - min) + 1) + min;
     }
 
     // TODO: move this function!
@@ -58,24 +62,57 @@ public class Bunny {
         return rand.nextDouble() * (max - min) + min;
     }
 
+    // TODO: move this function!
+    // from: http://stackoverflow.com/a/22471448/2386438
+    public Bitmap getRoundedShape(Bitmap scaleBitmapImage, int offset, int radius) {
+        int targetWidth = radius * 2;
+        int targetHeight = radius * 2;
+        Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,
+                targetHeight, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(targetBitmap);
+        Path path = new Path();
+        path.addCircle(((float) targetWidth - 1) / 2,
+                ((float) targetHeight - 1) / 2,
+                (Math.min(((float) targetWidth), ((float) targetHeight)) / 2),
+                Path.Direction.CCW
+        );
+
+        canvas.clipPath(path);
+        Bitmap sourceBitmap = scaleBitmapImage;
+        canvas.drawBitmap(sourceBitmap,
+                new Rect(0, offset, sourceBitmap.getWidth(), offset + 200),
+                new Rect(0, 0, targetWidth, targetHeight), null
+        );
+        return targetBitmap;
+    }
+
     public Bunny(Context context) {
         Log.d(TAG, "ctor");
 
-        radius = randInt(20, 40);
+        radius = randInt(20, 100);
         x = randInt(radius, WIDTH - radius);
         y = randInt(radius, HEIGHT - radius);
         vx = randDouble(-0.2, 0.2);
         vy = randDouble(-0.2, 0.2);
 
-        image = context.getResources().getDrawable(R.drawable.bunny);
+        bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.flat_bunny);
+        bm_width = bm.getWidth();
+        bm_height = bm.getHeight();
     }
 
     public void draw(Canvas canvas) {
-        image.setBounds((int) Math.round(x-radius),
-                (int) Math.round(y-radius),
-                (int) Math.round(x+radius),
-                (int) Math.round(y+radius));
-        image.draw(canvas);
+
+        Bitmap actual_bm = getRoundedShape(bm, offset, radius);
+        canvas.drawBitmap(actual_bm, Math.round(x-radius), Math.round(y-radius), null);
+
+        // Next time, display another part of the bunny
+        // to create an illusion of rotation
+        offset += 2;
+        int max_offset = bm_height - bm_width;
+        if (offset >= max_offset) {
+            offset -= max_offset;
+        }
     }
 
     public void update(long delta) {
