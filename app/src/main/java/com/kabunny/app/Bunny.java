@@ -12,54 +12,26 @@ import java.util.Random;
 
 public class Bunny {
     private String TAG = "Bunny";
-    public int radius;
+    public float radius;
 
-    // Coordinates
-    public double x;
-    public double y;
-
-    // Speed (in pixels per ms)
-    public double vx;
-    public double vy;
+    public Vector2 position;
+    public Vector2 velocity; // pixels per ms
 
     // TODO: get canvas dimensions
     // note that actual dim (WxH) on my tablet is 1280x736 or 800x1205,
     // depending on the orientation.
     // We may want to force either orientation.
-    private int WIDTH = 720;
-    private int HEIGHT = 720;
+    private float WIDTH = 720f;
+    private float HEIGHT = 720f;
 
     private Bitmap bm;
     private double offset = 0;
     private int bm_width;
     private int bm_height;
 
-    // TODO: move this function!
-    // from http://stackoverflow.com/a/363692/2386438
-    /**
-     * Returns a pseudo-random number between min and max, inclusive.
-     * The difference between min and max can be at most
-     * <code>Integer.MAX_VALUE - 1</code>.
-     *
-     * @param min Minimum value
-     * @param max Maximum value. Must be greater than min.
-     * @return Integer between min and max, inclusive.
-     * @see java.util.Random#nextInt(int)
-     */
-    public static int randInt(int min, int max) {
-
-        // Usually this can be a field rather than a method variable
+    public static float randFloat(float min, float max) {
         Random rand = new Random();
-
-        // nextInt is normally exclusive of the top value,
-        // so add 1 to make it inclusive
-        return rand.nextInt((max - min) + 1) + min;
-    }
-
-    // TODO: move this function!
-    public static double randDouble(double min, double max) {
-        Random rand = new Random();
-        return rand.nextDouble() * (max - min) + min;
+        return rand.nextFloat() * (max - min) + min;
     }
 
     // TODO: move this function!
@@ -88,15 +60,18 @@ public class Bunny {
     }
 
     public Bunny(Context context,
-                 Integer radius, Integer x, Integer y, Double vx, Double vy) {
+                 Integer radius, Float x, Float y, Float vx, Float vy) {
         Log.d(TAG, "ctor");
 
-        this.radius = radius != null ? radius : randInt(20, 100);
+        this.radius = radius != null ? radius : randFloat(20, 100);
 
-        this.x = x != null ? x : randInt(this.radius, WIDTH - this.radius);
-        this.y = y != null ? y : randInt(this.radius, HEIGHT - this.radius);
-        this.vx = vx != null ? vx : randDouble(-0.2, 0.2);
-        this.vy = vy != null ? vy : randDouble(-0.2, 0.2);
+        x = x != null ? x : randFloat(this.radius, WIDTH - this.radius);
+        y = y != null ? y : randFloat(this.radius, HEIGHT - this.radius);
+        position = new Vector2(x, y);
+
+        vx = vx != null ? vx : randFloat(-0.2f, 0.2f);
+        vy = vy != null ? vy : randFloat(-0.2f, 0.2f);
+        velocity = new Vector2(vx, vy);
 
         bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.flat_bunny);
         bm_width = bm.getWidth();
@@ -104,16 +79,15 @@ public class Bunny {
     }
 
     public void draw(Canvas canvas) {
-        Bitmap actual_bm = getRoundedShape(bm, (int) Math.round(offset), radius);
-        canvas.drawBitmap(actual_bm, Math.round(x-radius), Math.round(y-radius), null);
+        Bitmap actual_bm = getRoundedShape(bm, (int) Math.round(offset), (int) Math.round(radius));
+        canvas.drawBitmap(actual_bm, Math.round(position.x-radius), Math.round(position.y-radius), null);
     }
 
     public void update(long delta) {
-        double delta_x = vx * delta;
-        double delta_y = vy * delta;
+        position.add(velocity.clone().scl(delta));
 
-        x += delta_x;
-        y += delta_y;
+        double delta_x = velocity.x * delta;
+        double delta_y = velocity.y * delta;
 
         int min_offset = 0;
         int max_offset = bm_height - bm_width;
@@ -129,7 +103,7 @@ public class Bunny {
         double delta_dist = Math.sqrt(Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
         double delta_offset = delta_dist * max_offset / (2.0 * Math.PI * radius);
 
-        if (vy > 0) {
+        if (velocity.y > 0) {
             offset -= delta_offset;
             if (offset <= min_offset) {
                 offset += max_offset;
@@ -139,6 +113,6 @@ public class Bunny {
             if (offset >= max_offset) {
                 offset -= max_offset;
             }
-        }
+        }        
     }
 }
