@@ -26,7 +26,7 @@ public class PerfStats {
         paint.setTypeface(Typeface.MONOSPACE);
     }
 
-    public void onDraw(Canvas canvas) {
+    public void update() {
         long now_time = SystemClock.elapsedRealtime();
         long delta_time = now_time - last_time;
         if (delta_time >= 1000) {
@@ -43,6 +43,9 @@ public class PerfStats {
         } else {
             frame_count++;
         }
+    }
+
+    public void draw(Canvas canvas) {
         canvas.drawText(String.format("%6.02f fps %6.02f cpu", fps, cpu), 0, 20, paint);
     }
 }
