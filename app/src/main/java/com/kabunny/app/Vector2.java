@@ -145,4 +145,11 @@ public class Vector2 {
     public float len2() {
         return x*x + y*y;
     }
+
+    /**
+     * Normalize (modifies this vector)
+     */
+    public Vector2 normalize() {
+        return scl(1f / len());
+    }
 }

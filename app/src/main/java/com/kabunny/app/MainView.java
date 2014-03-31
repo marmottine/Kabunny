@@ -7,9 +7,6 @@ import android.os.SystemClock;
 import android.graphics.Color;
 import android.view.SurfaceView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainView extends SurfaceView {
     private String TAG = "MainView";
     private int num_bunnies = 16;
@@ -71,7 +68,7 @@ public class MainView extends SurfaceView {
         // compute a normalized vector between centers
         Vector2 normal = bunny1.position.clone().
                 sub(bunny2.position).
-                div(bunny1.radius + bunny2.radius);
+                normalize();
 
         // project velocity onto the normalized vector
         float velocity1 = bunny1.velocity.dot(normal);
@@ -97,9 +94,9 @@ public class MainView extends SurfaceView {
     }
 
     private void checkCollision(Bunny bunny1, Bunny bunny2) {
-        float a = (bunny1.position.x - bunny2.position.x);
-        float b = (bunny1.position.y - bunny2.position.y);
-        float distance = (float)Math.sqrt(a*a + b*b);
+        Vector2 diff = bunny1.position.clone().sub(bunny2.position);
+        float distance = diff.len();
+
         if (approaching(bunny1, bunny2) &&
             distance < bunny1.radius + bunny2.radius) {
             elasticCollision(bunny1, bunny2);
@@ -144,8 +141,6 @@ public class MainView extends SurfaceView {
         long target_simtime = Math.min(update_time - last_update_time, min_fps);
         last_update_time = update_time;
 
-        float energy = 0f;
-
         int sims = 0;
         do {
             sims++;
@@ -175,7 +170,6 @@ public class MainView extends SurfaceView {
                     Bunny bunny2 = bunnies[j];
                     checkCollision(bunny1, bunny2);
                 }
-                energy += (0.5f) * bunny1.mass * bunny1.velocity.len2();
             }
 
             // get "wall" coordinates
@@ -197,7 +191,13 @@ public class MainView extends SurfaceView {
             }
         } while(target_simtime > 0);
 
-        Log.i("energy", "" + energy);
+        float energy = 0;
+        float momentum = 0;
+        for (Bunny bunny : bunnies) {
+            energy += 0.5 * bunny.mass * bunny.velocity.len2();
+            momentum += bunny.mass * bunny.velocity.len();
+        }
+        Log.i("energy / momentum", "" + energy + " / " + momentum);
         //if (sims != 1) Log.i("co", "t" + sims);
     }
 }
