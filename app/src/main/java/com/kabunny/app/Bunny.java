@@ -37,26 +37,24 @@ public class Bunny {
 
     // TODO: move this function!
     // from: http://stackoverflow.com/a/22471448/2386438
-    public Bitmap getRoundedShape(Bitmap scaleBitmapImage, int offset, int radius) {
-        int targetWidth = radius * 2;
-        int targetHeight = radius * 2;
-        Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,
-                targetHeight, Bitmap.Config.ARGB_8888);
+    public Bitmap getRoundedShape(Bitmap sourceBitmap, int offset, int radius,
+                                  float rotation) {
+        int diameter = radius * 2;
+
+        Bitmap targetBitmap = Bitmap.createBitmap(diameter, diameter,
+                Bitmap.Config.ARGB_8888);
 
         Canvas canvas = new Canvas(targetBitmap);
         Path path = new Path();
-        path.addCircle(((float) targetWidth - 1) / 2,
-                ((float) targetHeight - 1) / 2,
-                (Math.min(((float) targetWidth), ((float) targetHeight)) / 2),
-                Path.Direction.CCW
-        );
-
+        path.addCircle(radius, radius, radius, Path.Direction.CCW);
         canvas.clipPath(path);
-        Bitmap sourceBitmap = scaleBitmapImage;
-        canvas.drawBitmap(sourceBitmap,
-                new Rect(0, offset, sourceBitmap.getWidth(), offset + sourceBitmap.getWidth()),
-                new Rect(0, 0, targetWidth, targetHeight), null
-        );
+        canvas.rotate(rotation, radius, radius);
+
+        int source_width = sourceBitmap.getWidth();
+        Rect src = new Rect(0, offset, source_width, offset + source_width);
+        Rect dst = new Rect(0, 0, diameter, diameter);
+        canvas.drawBitmap(sourceBitmap, src, dst, null);
+
         return targetBitmap;
     }
 
@@ -89,7 +87,14 @@ public class Bunny {
     }
 
     public void draw(Canvas canvas) {
-        Bitmap actual_bm = getRoundedShape(bm, (int) Math.round(offset), (int) Math.round(radius));
+        float angle = (float) Math.toDegrees(Math.atan(velocity.y/velocity.x));
+        if (velocity.x >= 0) {
+            angle -= 90;
+        } else {
+            angle += 90;
+        }
+
+        Bitmap actual_bm = getRoundedShape(bm, (int) Math.round(offset), (int) Math.round(radius), angle);
         canvas.drawBitmap(actual_bm, Math.round(position.x-radius), Math.round(position.y-radius), null);
     }
 
@@ -110,16 +115,10 @@ public class Bunny {
 
         double delta_offset = delta_pos.len() * max_offset / (2.0 * Math.PI * radius);
 
-        if (velocity.y > 0) {
-            offset -= delta_offset;
-            if (offset <= min_offset) {
-                offset += max_offset;
-            }
-        } else {
-            offset += delta_offset;
-            if (offset >= max_offset) {
-                offset -= max_offset;
-            }
-        }        
+        offset -= delta_offset;
+        if (offset <= min_offset) {
+            offset += max_offset;
+        }
+
     }
 }
