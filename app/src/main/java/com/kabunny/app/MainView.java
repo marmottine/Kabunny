@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.util.Log;
 import android.os.SystemClock;
 import android.graphics.Color;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 
 public class MainView extends SurfaceView {
@@ -13,6 +14,7 @@ public class MainView extends SurfaceView {
     private Bunny[] bunnies = new Bunny[num_bunnies];
     private Grass[] grasses;
     private int num_grasses = 25;
+    private Bomb bomb;
 
     private PerfStats perf_stats;
 
@@ -37,6 +39,8 @@ public class MainView extends SurfaceView {
             bunnies[i] = new Bunny(context, null, null, null, 0f, null);
         }
 
+        bomb = new Bomb(context);
+
         perf_stats = new PerfStats();
     }
 
@@ -57,6 +61,8 @@ public class MainView extends SurfaceView {
         for (Bunny bunny : bunnies) {
             bunny.draw(canvas);
         }
+
+        bomb.draw(canvas);
 
         perf_stats.draw(canvas);
     }
@@ -192,12 +198,38 @@ public class MainView extends SurfaceView {
         } while(target_simtime > 0);
 
         float energy = 0;
-        float momentum = 0;
+        float momentum_x = 0;
+        float momentum_y = 0;
         for (Bunny bunny : bunnies) {
             energy += 0.5 * bunny.mass * bunny.velocity.len2();
-            momentum += bunny.mass * bunny.velocity.len();
+            momentum_x += bunny.mass * Math.abs(bunny.velocity.x);
+            momentum_y += bunny.mass * Math.abs(bunny.velocity.y);
         }
-        Log.i("energy / momentum", "" + energy + " / " + momentum);
+//        Log.i("energy / momentum", "" + energy + " / " + (momentum_x + momentum_y));
         //if (sims != 1) Log.i("co", "t" + sims);
+    }
+
+
+    @Override
+    public boolean onTouchEvent (MotionEvent event) {
+        final int action = event.getActionMasked();
+        final Vector2 pos = new Vector2(event.getX(), event.getY());
+
+        switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN: {
+                bomb.start(pos);
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                bomb.move(pos);
+                break;
+            }
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL: {
+                bomb.delete();
+                break;
+            }
+        }
+        return true;
     }
 }
