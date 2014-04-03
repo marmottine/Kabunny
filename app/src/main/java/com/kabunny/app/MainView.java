@@ -209,6 +209,16 @@ public class MainView extends SurfaceView {
         //if (sims != 1) Log.i("co", "t" + sims);
     }
 
+    private void make_bomb_explode() {
+        for (Bunny bunny: bunnies) {
+            Vector2 diff = bomb.position.clone().sub(bunny.position);
+            float distance = diff.len();
+            if (bomb.explosion_range + bunny.radius >= distance) {
+                bunny.explode();
+            }
+        }
+        bomb.explode();
+    }
 
     @Override
     public boolean onTouchEvent (MotionEvent event) {
@@ -224,7 +234,9 @@ public class MainView extends SurfaceView {
                 bomb.move(pos);
                 break;
             }
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_UP: {
+                make_bomb_explode();
+            }
             case MotionEvent.ACTION_CANCEL: {
                 bomb.delete();
                 break;

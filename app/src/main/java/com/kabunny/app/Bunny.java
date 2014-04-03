@@ -119,6 +119,10 @@ public class Bunny {
         if (offset <= min_offset) {
             offset += max_offset;
         }
+    }
 
+    public void explode() {
+        // TODO
+        Log.d(TAG, "bunny killed");
     }
 }
