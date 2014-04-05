@@ -8,10 +8,15 @@ import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+
 public class MainView extends SurfaceView {
     private String TAG = "MainView";
-    private int num_bunnies = 16;
-    private Bunny[] bunnies = new Bunny[num_bunnies];
+
+    // initial number of bunnies. Actual number varies over time.
+    private int num_bunnies = 6;
+    private LinkedList<Bunny> bunnies;
     private Grass[] grasses;
     private int num_grasses = 25;
     private Bomb bomb;
@@ -34,9 +39,9 @@ public class MainView extends SurfaceView {
             grasses[i] = new Grass(context);
         }
 
-        bunnies = new Bunny[num_bunnies];
+        bunnies = new LinkedList<Bunny>();
         for (int i = 0; i < num_bunnies; i++) {
-            bunnies[i] = new Bunny(context, null, null, null, 0f, null);
+            bunnies.add(new Bunny(context, null, null, null, null, null));
         }
 
         bomb = new Bomb(context);
@@ -150,15 +155,19 @@ public class MainView extends SurfaceView {
         int sims = 0;
         do {
             sims++;
-
             long delta_simtime = target_simtime;
-            for (int i = 0; i < num_bunnies - 1; i++) {
-                Bunny bunny1 = bunnies[i];
-                for (int j = i + 1; j < num_bunnies; j++) {
-                    Bunny bunny2 = bunnies[j];
-                    delta_simtime = Math.min(delta_simtime, timeToCollision(bunny1, bunny2));
-                    if (delta_simtime == 1) break;
+
+            int i = 0;
+            for (Bunny bunny1 : bunnies) {
+                int j = 0;
+                for (Bunny bunny2 : bunnies) {
+                    if (j > i) {
+                        delta_simtime = Math.min(delta_simtime, timeToCollision(bunny1, bunny2));
+                        if (delta_simtime == 1) break;
+                    }
+                    j++;
                 }
+                i++;
             }
 
             target_simtime -= delta_simtime;
@@ -170,12 +179,16 @@ public class MainView extends SurfaceView {
             }
 
             // check bunny-to-bunny collisions
-            for (int i = 0; i < num_bunnies - 1; i++) {
-                Bunny bunny1 = bunnies[i];
-                for (int j = i + 1; j < num_bunnies; j++) {
-                    Bunny bunny2 = bunnies[j];
-                    checkCollision(bunny1, bunny2);
+            i = 0;
+            for (Bunny bunny1 : bunnies) {
+                int j = 0;
+                for (Bunny bunny2 : bunnies) {
+                    if (j > i) {
+                        checkCollision(bunny1, bunny2);
+                    }
+                    j++;
                 }
+                i++;
             }
 
             // get "wall" coordinates
@@ -210,13 +223,27 @@ public class MainView extends SurfaceView {
     }
 
     private void make_bomb_explode() {
-        for (Bunny bunny: bunnies) {
+
+        // Notify killed bunnies and build a list of their indices.
+        int idx = 0;
+        LinkedList<Integer> killed = new LinkedList<Integer>();
+        for (Bunny bunny : bunnies) {
             Vector2 diff = bomb.position.clone().sub(bunny.position);
             float distance = diff.len();
             if (bomb.explosion_range + bunny.radius >= distance) {
                 bunny.explode();
+                killed.add(idx);
             }
+            idx++;
         }
+
+        // Remove killed bunnies from the list.
+        Iterator<Integer> idx_iter = killed.descendingIterator();
+        while (idx_iter.hasNext()) {
+            bunnies.remove((int) idx_iter.next());
+        }
+
+        // Notify the bomb.
         bomb.explode();
     }
 
