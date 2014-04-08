@@ -1,25 +1,24 @@
 package com.kabunny.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.View;
 
 public class MainActivity extends Activity {
     private String TAG = "MainActivity";
-    private MainView main_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate");
+        setContentView(R.layout.activity_main);
+        Log.d(TAG, "create");
+    }
 
-        // remove title
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        main_view = new MainView(getWindow().getContext());
-        setContentView(main_view);
+    public void onPlayButtonClick(View view) {
+        Log.d(TAG, "Button pressed");
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
     }
 }

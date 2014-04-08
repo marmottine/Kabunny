@@ -1,5 +1,6 @@
 package com.kabunny.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.Log;
@@ -11,11 +12,11 @@ import android.view.SurfaceView;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class MainView extends SurfaceView {
-    private String TAG = "MainView";
+public class GameView extends SurfaceView {
+    private String TAG = "GameView";
 
     // initial number of bunnies. Actual number varies over time.
-    private int num_bunnies = 6;
+    private int num_bunnies = 16;
     private LinkedList<Bunny> bunnies;
     private Grass[] grasses;
     private int num_grasses = 25;
@@ -28,7 +29,7 @@ public class MainView extends SurfaceView {
     private long delta_simtime = 0;
     private long min_fps = 1000/20; // max delta time between frames
 
-    public MainView(Context context) {
+    public GameView(Context context) {
         super(context);
         setWillNotDraw(false);
         setKeepScreenOn(true);
@@ -51,6 +52,9 @@ public class MainView extends SurfaceView {
 
     @Override
     public void onDraw(Canvas canvas) {
+        if (bunnies.size() == 0) {
+            ((Activity)getContext()).finish();
+        }
         update(canvas);
         super.onDraw(canvas);
         invalidate();
