@@ -18,13 +18,6 @@ public class Bunny {
     public Vector2 position;
     public Vector2 velocity; // pixels per ms
 
-    // TODO: get canvas dimensions
-    // note that actual dim (WxH) on my tablet is 1280x736 or 800x1205,
-    // depending on the orientation.
-    // We may want to force either orientation.
-    private float WIDTH = 720f;
-    private float HEIGHT = 720f;
-
     private Bitmap bm;
     private float offset = 0f;
     private int bm_width;
@@ -58,18 +51,18 @@ public class Bunny {
         return targetBitmap;
     }
 
-    public Bunny(Context context,
+    public Bunny(Context context, int width, int height,
                  Integer radius, Float x, Float y, Float vx, Float vy) {
         Log.d(TAG, "ctor");
 
-        this.radius = radius != null ? radius : randFloat(20f, 100f);
+        this.radius = radius != null ? radius : randFloat(20f, 80f);
         mass = this.radius * this.radius * this.radius;
 
         if (x == null) {
-            x = randFloat(this.radius, WIDTH - this.radius);
+            x = randFloat(this.radius, width - this.radius);
         }
         if (y == null) {
-            y = randFloat(this.radius, HEIGHT - this.radius);
+            y = randFloat(this.radius, height - this.radius);
         }
         position = new Vector2(x, y);
 

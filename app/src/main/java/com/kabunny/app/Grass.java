@@ -12,13 +12,6 @@ public class Grass {
     private int x;
     private int y;
 
-    // TODO: get canvas dimensions
-    // note that actual dim (WxH) on my tablet is 1280x736 or 800x1205,
-    // depending on the orientation.
-    // We may want to force either orientation.
-    private int WIDTH = 720;
-    private int HEIGHT = 720;
-
     private Drawable image;
 
     // TODO: move this function!
@@ -46,9 +39,9 @@ public class Grass {
     }
 
 
-    public Grass(Context context) {
-        x = randInt(0, WIDTH);
-        y = randInt(0, HEIGHT);
+    public Grass(Context context, int width, int height) {
+        x = randInt(0, width);
+        y = randInt(0, height);
 
         image = context.getResources().getDrawable(R.drawable.grass);
     }

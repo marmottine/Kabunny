@@ -15,6 +15,8 @@ import java.util.LinkedList;
 public class GameView extends SurfaceView {
     private String TAG = "GameView";
 
+    private Context context;
+
     // initial number of bunnies. Actual number varies over time.
     private int num_bunnies = 16;
     private LinkedList<Bunny> bunnies;
@@ -35,19 +37,41 @@ public class GameView extends SurfaceView {
         setKeepScreenOn(true);
         setBackgroundColor(Color.rgb(0x8B, 0xD8, 0x37));
 
+        this.context = context;
+
+        perf_stats = new PerfStats();
+    }
+
+    private void init_objects(int width, int height) {
         grasses = new Grass[num_grasses];
         for (int i = 0; i < num_grasses; i++) {
-            grasses[i] = new Grass(context);
+            grasses[i] = new Grass(context, width, height);
         }
 
         bunnies = new LinkedList<Bunny>();
         for (int i = 0; i < num_bunnies; i++) {
-            bunnies.add(new Bunny(context, null, null, null, null, null));
+            bunnies.add(new Bunny(context, width, height, null, null, null, null, null));
         }
 
         bomb = new Bomb(context);
+    }
 
-        perf_stats = new PerfStats();
+    @Override
+    protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld){
+        super.onSizeChanged(xNew, yNew, xOld, yOld);
+
+        Log.d(TAG, "size changed: " + xOld + "x" + yOld + " -> " + xNew + "x" + yNew);
+
+        if (xNew == 0 || yNew == 0) {
+            return;
+        }
+
+        if (xOld == 0 && yOld == 0) {
+            // we were just added to the view hierarchy
+            // The view has probably just been created.
+            init_objects(xNew, yNew);
+        }
+
     }
 
     @Override
