@@ -24,6 +24,10 @@ public class GameView extends SurfaceView {
     private int num_grasses = 25;
     private Bomb bomb;
 
+    private SoundEffectsManager SEM;
+    private int sound_ids[];
+    private final int bomb_explosion_index = 0;
+
     private PerfStats perf_stats;
 
     private long last_update_time = 0;
@@ -39,7 +43,15 @@ public class GameView extends SurfaceView {
 
         this.context = context;
 
+        SEM = new SoundEffectsManager(context);
+        init_sounds();
+
         perf_stats = new PerfStats();
+    }
+
+    private void init_sounds() {
+        sound_ids = new int[10];
+        sound_ids[bomb_explosion_index] = SEM.load(R.raw.bomb);
     }
 
     private void init_objects(int width, int height) {
@@ -71,7 +83,6 @@ public class GameView extends SurfaceView {
             // The view has probably just been created.
             init_objects(xNew, yNew);
         }
-
     }
 
     @Override
@@ -251,6 +262,8 @@ public class GameView extends SurfaceView {
     }
 
     private void make_bomb_explode() {
+
+        SEM.play(sound_ids[bomb_explosion_index], 1);
 
         // Notify killed bunnies and build a list of their indices.
         int idx = 0;
