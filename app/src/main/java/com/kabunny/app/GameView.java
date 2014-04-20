@@ -2,10 +2,14 @@ package com.kabunny.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.os.SystemClock;
-import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -24,6 +28,9 @@ public class GameView extends SurfaceView {
     private int num_grasses = 25;
     private Bomb bomb;
 
+    private Rect playground;
+    private Rect score_panel;
+
     private SoundEffectsManager SEM;
     private int sound_ids[];
     private final int bomb_explosion_index = 0;
@@ -39,7 +46,6 @@ public class GameView extends SurfaceView {
         super(context);
         setWillNotDraw(false);
         setKeepScreenOn(true);
-        setBackgroundColor(Color.rgb(0x8B, 0xD8, 0x37));
 
         this.context = context;
 
@@ -55,14 +61,39 @@ public class GameView extends SurfaceView {
     }
 
     private void init_objects(int width, int height) {
+        // split width between score panel and playground panel
+        int split = width - Math.max(200, (int) (height * 1.5));  // TODO
+        score_panel = new Rect(0, 0, split, height);
+        playground = new Rect(split, 0, width, height);
+
+        // background
+        int playground_color = getResources().getColor(R.color.playground);
+        Paint playground_paint = new Paint();
+        playground_paint.setColor(playground_color);
+
+        int score_panel_color = getResources().getColor(R.color.score_panel);
+        Paint score_panel_paint = new Paint();
+        score_panel_paint.setColor(score_panel_color);
+
+        Bitmap targetBitmap = Bitmap.createBitmap(width, height,
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(targetBitmap);
+        canvas.drawRect(score_panel, score_panel_paint);
+        canvas.drawRect(playground, playground_paint);
+
+        Drawable background = new BitmapDrawable(getResources(), targetBitmap);
+        setBackground(background);
+
+
         grasses = new Grass[num_grasses];
         for (int i = 0; i < num_grasses; i++) {
-            grasses[i] = new Grass(context, width, height);
+            grasses[i] = new Grass(context, playground);
         }
 
         bunnies = new LinkedList<Bunny>();
         for (int i = 0; i < num_bunnies; i++) {
-            bunnies.add(new Bunny(context, width, height, null, null, null, null, null));
+            bunnies.add(new Bunny(context, playground, null, null, null, null, null));
         }
 
         bomb = new Bomb(context);
@@ -230,35 +261,33 @@ public class GameView extends SurfaceView {
                 i++;
             }
 
-            // get "wall" coordinates
-            int top_wall = 0;
-            int bottom_wall = canvas.getHeight();
-            int left_wall = 0;
-            int right_wall = canvas.getWidth();
-
             // check bunny-to-wall collisions
             for (Bunny bunny : bunnies) {
-                if ((bunny.position.x + bunny.radius >= right_wall && bunny.velocity.x > 0)
-                        || (bunny.position.x - bunny.radius <= left_wall && bunny.velocity.x < 0)) {
+                if ((bunny.position.x + bunny.radius >= playground.right
+                            && bunny.velocity.x > 0)
+                        || (bunny.position.x - bunny.radius <= playground.left
+                            && bunny.velocity.x < 0)) {
                     bunny.velocity.x = -bunny.velocity.x;
                 }
-                if ((bunny.position.y - bunny.radius <= top_wall && bunny.velocity.y < 0)
-                        || (bunny.position.y + bunny.radius >= bottom_wall && bunny.velocity.y > 0)) {
+                if ((bunny.position.y - bunny.radius <= playground.top
+                            && bunny.velocity.y < 0)
+                        || (bunny.position.y + bunny.radius >= playground.bottom
+                            && bunny.velocity.y > 0)) {
                     bunny.velocity.y = -bunny.velocity.y;
                 }
             }
         } while(target_simtime > 0);
 
-        float energy = 0;
-        float momentum_x = 0;
-        float momentum_y = 0;
-        for (Bunny bunny : bunnies) {
-            energy += 0.5 * bunny.mass * bunny.velocity.len2();
-            momentum_x += bunny.mass * Math.abs(bunny.velocity.x);
-            momentum_y += bunny.mass * Math.abs(bunny.velocity.y);
-        }
+//        float energy = 0;
+//        float momentum_x = 0;
+//        float momentum_y = 0;
+//        for (Bunny bunny : bunnies) {
+//            energy += 0.5 * bunny.mass * bunny.velocity.len2();
+//            momentum_x += bunny.mass * Math.abs(bunny.velocity.x);
+//            momentum_y += bunny.mass * Math.abs(bunny.velocity.y);
+//        }
 //        Log.i("energy / momentum", "" + energy + " / " + (momentum_x + momentum_y));
-        //if (sims != 1) Log.i("co", "t" + sims);
+//        if (sims != 1) Log.i("co", "t" + sims);
     }
 
     private void make_bomb_explode() {

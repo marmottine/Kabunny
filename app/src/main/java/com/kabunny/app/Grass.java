@@ -2,6 +2,7 @@ package com.kabunny.app;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -11,6 +12,9 @@ public class Grass {
     // Coordinates
     private int x;
     private int y;
+
+    private static final int width = 100;
+    private static final int height = 100;
 
     private Drawable image;
 
@@ -39,15 +43,15 @@ public class Grass {
     }
 
 
-    public Grass(Context context, int width, int height) {
-        x = randInt(0, width);
-        y = randInt(0, height);
+    public Grass(Context context, Rect playground) {
+        x = randInt(playground.left, playground.right - width);
+        y = randInt(playground.top, playground.bottom - height);
 
         image = context.getResources().getDrawable(R.drawable.grass);
     }
 
     public void draw(Canvas canvas) {
-        image.setBounds(x, y, x+100, y+100);
+        image.setBounds(x, y, x+width, y+height);
         image.draw(canvas);
     }
 }

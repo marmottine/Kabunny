@@ -51,7 +51,7 @@ public class Bunny {
         return targetBitmap;
     }
 
-    public Bunny(Context context, int width, int height,
+    public Bunny(Context context, Rect playground,
                  Integer radius, Float x, Float y, Float vx, Float vy) {
         Log.d(TAG, "ctor");
 
@@ -59,10 +59,10 @@ public class Bunny {
         mass = this.radius * this.radius * this.radius;
 
         if (x == null) {
-            x = randFloat(this.radius, width - this.radius);
+            x = randFloat(playground.left + this.radius, playground.right - this.radius);
         }
         if (y == null) {
-            y = randFloat(this.radius, height - this.radius);
+            y = randFloat(playground.top + this.radius, playground.bottom - this.radius);
         }
         position = new Vector2(x, y);
 
